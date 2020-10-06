@@ -12,3 +12,9 @@ h1 {
 p {
   color: #777;
 }
+
+.chart {
+  width: 400px;
+  height: 400px;
+
+}

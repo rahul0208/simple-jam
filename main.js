@@ -84,6 +84,40 @@ function appendPre(message) {
   pre.appendChild(textContent);
 }
 
+function addChart(map) {
+  var data = {
+      labels:  Array.from(map.keys()),
+      datasets: [{
+        data:  Array.from(map.values())
+      }]};
+  var ctx = document.getElementById('myChart');
+  var myChart = new Chart(ctx, {
+    type: 'bar',
+    data: data
+      });
+}
+
+function ceateConter() {
+  this.map = new Map();
+  this.addData =  function (key,value){
+    var count = this.map.has(key) ? this.map.get(key) : 0;
+    count = count+1;
+    this.map.set(key,count);
+  }
+  this.render = function (elementId) {
+    var data = {
+        labels:  Array.from(this.map.keys()),
+        datasets: [{
+          data:  Array.from(this.map.values())
+        }]};
+    var ctx = document.getElementById(elementId);
+    var myChart = new Chart(ctx, {
+      type: 'bar',
+      data: data
+        });
+  }
+}
+
 /**
  * Print the names and majors of students in a sample spreadsheet:
  * https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit
@@ -94,16 +128,25 @@ function listMajors() {
     range: 'Class Data!A2:E',
   }).then(function(response) {
     var range = response.result;
+    let counter1 = new ceateConter();
+    let counter2 = new ceateConter();
+    let counter3 = new ceateConter();
     if (range.values.length > 0) {
       appendPre('Name, Major:');
       for (i = 0; i < range.values.length; i++) {
         var row = range.values[i];
+        counter1.addData(row[3],row[0])
+        counter2.addData(row[4],row[0])
+        counter3.addData(row[2],row[0])
         // Print columns A and E, which correspond to indices 0 and 4.
         appendPre(row[0] + ', ' + row[3] + ', ' + row[4]);
       }
     } else {
       appendPre('No data found.');
     }
+    counter1.render('chart1');
+    counter2.render('chart2');
+    counter3.render('chart3');
   }, function(response) {
     appendPre('Error: ' + response.result.error.message);
   });
